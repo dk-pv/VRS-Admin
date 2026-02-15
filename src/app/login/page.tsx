@@ -30,6 +30,7 @@ export default function LoginPage() {
 
       // Save token
       localStorage.setItem("adminToken", data.token);
+      localStorage.setItem("adminRole", data.admin.role);
 
       alert("Login Success");
       router.push("/dashboard");
@@ -60,10 +61,7 @@ export default function LoginPage() {
           onChange={(e) => setPassword(e.target.value)}
         />
 
-        <button
-          type="submit"
-          className="w-full bg-black text-white p-2"
-        >
+        <button type="submit" className="w-full bg-black text-white p-2">
           Login
         </button>
       </form>
