@@ -66,6 +66,7 @@ export default function LoginPage() {
         <button type="submit" className="w-full bg-black text-white p-2">
           Login
         </button>
+        
       </form>
     </div>
   );
