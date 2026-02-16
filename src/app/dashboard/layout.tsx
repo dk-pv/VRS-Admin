@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { LayoutDashboard, Image, Users, LogOut } from "lucide-react";
 
 export default function DashboardLayout({
   children,
@@ -10,7 +11,10 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
+
   const [role, setRole] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem("adminToken");
@@ -20,6 +24,7 @@ export default function DashboardLayout({
       router.push("/login");
     } else {
       setRole(storedRole || "");
+      setLoading(false);
     }
   }, []);
 
@@ -29,45 +34,69 @@ export default function DashboardLayout({
     router.push("/login");
   };
 
-  return (
-    <div className="flex h-screen">
-      {/* Sidebar */}
-      <div className="w-64 bg-black text-white flex flex-col justify-between p-5">
-        <div>
-          <h2 className="text-xl font-bold mb-8">VRS Admin</h2>
+  if (loading) return null;
 
-          <nav className="flex flex-col gap-4">
-            <Link href="/dashboard" className="hover:text-gray-300">
+  const menuItemClass = (path: string) =>
+    `flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
+      pathname === path
+        ? "bg-[#d4af37] text-black font-medium"
+        : "text-gray-300 hover:bg-white/10 hover:text-white"
+    }`;
+
+  return (
+    <div className="flex h-screen bg-gray-100">
+
+      {/* Sidebar */}
+      <div className="w-72 bg-[#0f0f0f] text-white flex flex-col justify-between p-6 shadow-2xl">
+
+        {/* Top Section */}
+        <div>
+          <h2 className="text-2xl font-semibold tracking-wide mb-10 text-[#d4af37]">
+            VRS Admin
+          </h2>
+
+          <nav className="flex flex-col gap-3">
+
+            <Link href="/dashboard" className={menuItemClass("/dashboard")}>
+              <LayoutDashboard size={18} />
               Dashboard
             </Link>
 
-            <Link href="/dashboard/media" className="hover:text-gray-300">
+            <Link
+              href="/dashboard/media"
+              className={menuItemClass("/dashboard/media")}
+            >
+              <Image size={18} />
               Media Settings
             </Link>
 
-            {/* 👑 Show only if superadmin */}
             {role === "superadmin" && (
               <Link
                 href="/dashboard/admins"
-                className="hover:text-gray-300"
+                className={menuItemClass("/dashboard/admins")}
               >
+                <Users size={18} />
                 Admin Management
               </Link>
             )}
           </nav>
         </div>
 
+        {/* Logout */}
         <button
           onClick={handleLogout}
-          className="bg-red-600 p-2 rounded hover:bg-red-700"
+          className="flex items-center gap-3 px-4 py-3 rounded-lg bg-red-600 hover:bg-red-700 transition"
         >
+          <LogOut size={18} />
           Logout
         </button>
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 p-10 bg-gray-100 overflow-y-auto">
-        {children}
+      <div className="flex-1 p-10 overflow-y-auto">
+        <div className="bg-white rounded-2xl shadow-lg p-8 min-h-full">
+          {children}
+        </div>
       </div>
     </div>
   );
