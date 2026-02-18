@@ -9,11 +9,13 @@ export default function HeroMedia() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
   // Fetch current hero on load
   useEffect(() => {
     const fetchHero = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/hero");
+        const res = await fetch(`${API_BASE_URL}/api/hero`);
         const data = await res.json();
 
         if (data) {
@@ -25,15 +27,14 @@ export default function HeroMedia() {
           }
         }
       } catch (err) {
-        console.log(err);
+        console.log("Fetch Hero Error:", err);
       }
     };
 
-    fetchHero();
-  }, []);
-
-    const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-
+    if (API_BASE_URL) {
+      fetchHero();
+    }
+  }, [API_BASE_URL]);
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -57,8 +58,14 @@ export default function HeroMedia() {
       });
 
       const data = await res.json();
-      setMessage(data.message);
+
+      if (!res.ok) {
+        setMessage(data.message || "Failed to update");
+      } else {
+        setMessage("Hero updated successfully");
+      }
     } catch (error) {
+      console.log("Update Error:", error);
       setMessage("Something went wrong");
     }
 
@@ -68,10 +75,8 @@ export default function HeroMedia() {
   return (
     <div className="min-h-screen bg-gray-100 p-10">
       <div className="max-w-3xl mx-auto bg-white shadow-lg rounded-xl p-8 space-y-6">
-
         <h1 className="text-3xl font-bold">Hero Section Settings</h1>
 
-        {/* Type Selector */}
         <div>
           <label className="block font-medium mb-2">
             Select Hero Type
@@ -87,7 +92,6 @@ export default function HeroMedia() {
           </select>
         </div>
 
-        {/* Video Input */}
         {type === "video" && (
           <div>
             <label className="block font-medium mb-2">
@@ -103,7 +107,6 @@ export default function HeroMedia() {
           </div>
         )}
 
-        {/* Image Input */}
         {type === "image" && (
           <div>
             <label className="block font-medium mb-2">
@@ -119,7 +122,6 @@ export default function HeroMedia() {
           </div>
         )}
 
-        {/* Save Button */}
         <button
           onClick={handleSubmit}
           disabled={loading}
@@ -128,7 +130,6 @@ export default function HeroMedia() {
           {loading ? "Saving..." : "Save Hero Settings"}
         </button>
 
-        {/* Success Message */}
         {message && (
           <p className="text-green-600 font-medium">{message}</p>
         )}
