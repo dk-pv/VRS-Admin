@@ -32,6 +32,9 @@ export default function HeroMedia() {
     fetchHero();
   }, []);
 
+    const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+
   const handleSubmit = async () => {
     setLoading(true);
     setMessage("");
@@ -44,7 +47,7 @@ export default function HeroMedia() {
         : { type, images: images.split(",").map((img) => img.trim()) };
 
     try {
-      const res = await fetch("http://localhost:5000/api/hero", {
+      const res = await fetch(`${API_BASE_URL}/api/hero`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
