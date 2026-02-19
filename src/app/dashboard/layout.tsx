@@ -67,7 +67,15 @@ export default function DashboardLayout({
               className={menuItemClass("/dashboard/media")}
             >
               <Image size={18} />
-              Media Settings
+              Hero Media
+            </Link>
+
+            <Link
+              href="/dashboard/secured-properties"
+              className={menuItemClass("/dashboard/secured-properties")}
+            >
+              <Image size={18} />
+              Secured Properties
             </Link>
 
             {role === "superadmin" && (
