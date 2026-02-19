@@ -85,6 +85,14 @@ export default function DashboardLayout({
               Properties Showcase
             </Link>
 
+            <Link
+              href="/dashboard/discover-video-section"
+              className={menuItemClass("/dashboard/discover-video-section")}
+            >
+              <Image size={18} />
+              Discover Video Section  
+            </Link>
+
             {role === "superadmin" && (
               <Link
                 href="/dashboard/admins"
