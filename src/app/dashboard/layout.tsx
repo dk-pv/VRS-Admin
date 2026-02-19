@@ -115,7 +115,7 @@ export default function DashboardLayout({
               Video Testimonials  
             </Link>
 
-            {role === "superadmin" && (
+            {/* {role === "superadmin" && (
               <Link
                 href="/dashboard/admins"
                 className={menuItemClass("/dashboard/admins")}
@@ -123,7 +123,7 @@ export default function DashboardLayout({
                 <Users size={18} />
                 Admin Management
               </Link>
-            )}
+            )} */}
           </nav>
         </div>
 
