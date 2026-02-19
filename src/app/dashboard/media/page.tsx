@@ -1,72 +1,302 @@
+// "use client";
+
+// import { useEffect, useState } from "react";
+
+// interface HeroData {
+//   type: "image" | "video";
+//   images?: string[];
+//   videoUrl?: string;
+// }
+
+// export default function HeroMedia() {
+//   const [type, setType] = useState<"image" | "video">("image");
+//   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+//   const [currentHero, setCurrentHero] = useState<HeroData | null>(null);
+//   const [loading, setLoading] = useState(false);
+//   const [message, setMessage] = useState("");
+
+//   const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+//   // Fetch hero
+//   useEffect(() => {
+//     const fetchHero = async () => {
+//       const res = await fetch(`${API_BASE_URL}/api/hero`);
+//       const data = await res.json();
+//       if (data) {
+//         setCurrentHero(data);
+//         setType(data.type);
+//       }
+//     };
+//     if (API_BASE_URL) fetchHero();
+//   }, [API_BASE_URL]);
+
+//   // Handle file select
+//   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+//     if (!e.target.files) return;
+
+//     const filesArray = Array.from(e.target.files);
+
+//     if (type === "image") {
+//       const totalFiles = [...selectedFiles, ...filesArray];
+
+//       if (totalFiles.length > 10) {
+//         setMessage("Maximum 10 images allowed");
+//         return;
+//       }
+
+//       setSelectedFiles(totalFiles);
+//     } else {
+//       // video → only 1
+//       setSelectedFiles([filesArray[0]]);
+//     }
+//   };
+
+//   // Remove image
+//   const removeImage = (index: number) => {
+//     const updated = selectedFiles.filter((_, i) => i !== index);
+//     setSelectedFiles(updated);
+//   };
+
+//   const handleSubmit = async () => {
+//     if (selectedFiles.length === 0) {
+//       setMessage("Please select file(s)");
+//       return;
+//     }
+
+//     setLoading(true);
+//     setMessage("");
+
+//     const token = localStorage.getItem("adminToken");
+
+//     const formData = new FormData();
+//     formData.append("type", type);
+
+//     if (type === "image") {
+//       selectedFiles.forEach((file) => {
+//         formData.append("images", file);
+//       });
+//     } else {
+//       formData.append("video", selectedFiles[0]);
+//     }
+
+//     const res = await fetch(`${API_BASE_URL}/api/hero`, {
+//       method: "PUT",
+//       headers: {
+//         Authorization: `Bearer ${token}`,
+//       },
+//       body: formData,
+//     });
+
+//     const data = await res.json();
+
+//     if (!res.ok) {
+//       setMessage(data.message || "Upload failed");
+//     } else {
+//       setMessage("Hero updated successfully ✅");
+//       setSelectedFiles([]);
+//       setCurrentHero(data.hero);
+//     }
+
+//     setLoading(false);
+//   };
+
+//   return (
+//     <div className="min-h-screen bg-gray-100 p-10">
+//       <div className="max-w-4xl mx-auto bg-white shadow-xl rounded-2xl p-10 space-y-8">
+//         <h1 className="text-3xl font-bold">Hero Section Settings</h1>
+
+//         {/* Type */}
+//         <select
+//           value={type}
+//           onChange={(e) =>
+//             setType(e.target.value as "image" | "video")
+//           }
+//           className="w-full border rounded-lg p-3"
+//         >
+//           <option value="image">Images (Max 10)</option>
+//           <option value="video">Video</option>
+//         </select>
+
+//         {/* Upload */}
+//         <input
+//           type="file"
+//           accept={type === "image" ? "image/*" : "video/*"}
+//           multiple={type === "image"}
+//           onChange={handleFileChange}
+//           className="w-full border rounded-lg p-3"
+//         />
+
+//         {/* Preview */}
+//         {selectedFiles.length > 0 && (
+//           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+//             {type === "image" &&
+//               selectedFiles.map((file, index) => (
+//                 <div key={index} className="relative">
+//                   <img
+//                     src={URL.createObjectURL(file)}
+//                     className="rounded-lg object-cover h-40 w-full"
+//                   />
+//                   <button
+//                     onClick={() => removeImage(index)}
+//                     className="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 text-xs rounded"
+//                   >
+//                     Remove
+//                   </button>
+//                 </div>
+//               ))}
+
+//             {type === "video" && (
+//               <video
+//                 src={URL.createObjectURL(selectedFiles[0])}
+//                 controls
+//                 className="rounded-lg w-full"
+//               />
+//             )}
+//           </div>
+//         )}
+
+//         <button
+//           onClick={handleSubmit}
+//           disabled={loading}
+//           className="w-full bg-black text-white py-3 rounded-lg"
+//         >
+//           {loading ? "Uploading..." : "Save Hero Settings"}
+//         </button>
+
+//         {message && (
+//           <p className="text-green-600 font-medium">
+//             {message}
+//           </p>
+//         )}
+//       </div>
+//     </div>
+//   );
+// }
+
+
+
 "use client";
 
 import { useEffect, useState } from "react";
 
+interface HeroData {
+  type: "image" | "video";
+  images?: string[];
+  videoUrl?: string;
+}
+
 export default function HeroMedia() {
-  const [type, setType] = useState("image");
-  const [videoUrl, setVideoUrl] = useState("");
-  const [images, setImages] = useState("");
+  const [type, setType] = useState<"image" | "video">("image");
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [savedImages, setSavedImages] = useState<string[]>([]);
+  const [savedVideo, setSavedVideo] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-  // Fetch current hero on load
+  // Fetch hero
   useEffect(() => {
     const fetchHero = async () => {
-      try {
-        const res = await fetch(`${API_BASE_URL}/api/hero`);
-        const data = await res.json();
+      const res = await fetch(`${API_BASE_URL}/api/hero`);
+      const data = await res.json();
 
-        if (data) {
-          setType(data.type);
-          if (data.type === "video") {
-            setVideoUrl(data.videoUrl || "");
-          } else {
-            setImages(data.images?.join(", ") || "");
-          }
-        }
-      } catch (err) {
-        console.log("Fetch Hero Error:", err);
+      if (data) {
+        setType(data.type);
+        setSavedImages(data.images || []);
+        setSavedVideo(data.videoUrl || null);
       }
     };
 
-    if (API_BASE_URL) {
-      fetchHero();
-    }
+    if (API_BASE_URL) fetchHero();
   }, [API_BASE_URL]);
 
+  // Add files
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
+
+    const newFiles = Array.from(e.target.files);
+
+    if (type === "image") {
+      const total = [...savedImages, ...selectedFiles, ...newFiles];
+
+      if (total.length > 10) {
+        setMessage("Maximum 10 images allowed");
+        return;
+      }
+
+      setSelectedFiles([...selectedFiles, ...newFiles]);
+    } else {
+      setSelectedFiles([newFiles[0]]);
+    }
+  };
+
+  // Remove new image (before save)
+  const removeNewImage = (index: number) => {
+    const updated = selectedFiles.filter((_, i) => i !== index);
+    setSelectedFiles(updated);
+  };
+
+  // Remove saved image (after save)
+  const removeSavedImage = async (index: number) => {
+    const updatedImages = savedImages.filter((_, i) => i !== index);
+
+    setSavedImages(updatedImages);
+
+    // Update DB
+    await fetch(`${API_BASE_URL}/api/hero/remove-image`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ images: updatedImages }),
+    });
+  };
+
   const handleSubmit = async () => {
+    if (selectedFiles.length === 0 && type === "image") {
+      setMessage("No new images selected");
+      return;
+    }
+
     setLoading(true);
     setMessage("");
 
     const token = localStorage.getItem("adminToken");
+    const formData = new FormData();
+    formData.append("type", type);
 
-    const body =
-      type === "video"
-        ? { type, videoUrl }
-        : { type, images: images.split(",").map((img) => img.trim()) };
+    if (type === "image") {
+      selectedFiles.forEach((file) =>
+        formData.append("images", file)
+      );
+    } else {
+      formData.append("video", selectedFiles[0]);
+    }
 
-    try {
-      const res = await fetch(`${API_BASE_URL}/api/hero`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(body),
-      });
+    const res = await fetch(`${API_BASE_URL}/api/hero`, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
 
-      const data = await res.json();
+    const data = await res.json();
 
-      if (!res.ok) {
-        setMessage(data.message || "Failed to update");
+    if (!res.ok) {
+      setMessage("Upload failed");
+    } else {
+      setMessage("Hero updated successfully ✅");
+
+      // Merge new images with saved images
+      if (type === "image") {
+        setSavedImages(data.hero.images);
+        setSelectedFiles([]);
       } else {
-        setMessage("Hero updated successfully");
+        setSavedVideo(data.hero.videoUrl);
+        setSelectedFiles([]);
       }
-    } catch (error) {
-      console.log("Update Error:", error);
-      setMessage("Something went wrong");
     }
 
     setLoading(false);
@@ -74,66 +304,89 @@ export default function HeroMedia() {
 
   return (
     <div className="min-h-screen bg-gray-100 p-10">
-      <div className="max-w-3xl mx-auto bg-white shadow-lg rounded-xl p-8 space-y-6">
+      <div className="max-w-4xl mx-auto bg-white shadow-xl rounded-2xl p-10 space-y-8">
         <h1 className="text-3xl font-bold">Hero Section Settings</h1>
 
-        <div>
-          <label className="block font-medium mb-2">
-            Select Hero Type
-          </label>
+        <select
+          value={type}
+          onChange={(e) =>
+            setType(e.target.value as "image" | "video")
+          }
+          className="w-full border rounded-lg p-3"
+        >
+          <option value="image">Images (Max 10)</option>
+          <option value="video">Video</option>
+        </select>
 
-          <select
-            value={type}
-            onChange={(e) => setType(e.target.value)}
-            className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-black"
-          >
-            <option value="image">Images (Max 10)</option>
-            <option value="video">YouTube Video</option>
-          </select>
-        </div>
+        <input
+          type="file"
+          accept={type === "image" ? "image/*" : "video/*"}
+          multiple={type === "image"}
+          onChange={handleFileChange}
+          className="w-full border rounded-lg p-3"
+        />
 
-        {type === "video" && (
-          <div>
-            <label className="block font-medium mb-2">
-              YouTube Video URL
-            </label>
-            <input
-              type="text"
-              placeholder="https://youtube.com/watch?v=xxxxx"
-              className="w-full border rounded-lg p-3"
-              value={videoUrl}
-              onChange={(e) => setVideoUrl(e.target.value)}
-            />
+        {/* Saved Images */}
+        {type === "image" && savedImages.length > 0 && (
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {savedImages.map((img, index) => (
+              <div key={index} className="relative">
+                <img
+                  src={img}
+                  className="rounded-lg object-cover h-40 w-full"
+                />
+                <button
+                  onClick={() => removeSavedImage(index)}
+                  className="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 text-xs rounded"
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
           </div>
         )}
 
-        {type === "image" && (
-          <div>
-            <label className="block font-medium mb-2">
-              Image URLs (comma separated)
-            </label>
-            <textarea
-              rows={4}
-              placeholder="https://image1.jpg, https://image2.jpg"
-              className="w-full border rounded-lg p-3"
-              value={images}
-              onChange={(e) => setImages(e.target.value)}
-            />
-          </div>
+        {/* New Images */}
+        {type === "image" &&
+          selectedFiles.map((file, index) => (
+            <div key={index} className="relative">
+              <img
+                src={URL.createObjectURL(file)}
+                className="rounded-lg object-cover h-40 w-full"
+              />
+              <button
+                onClick={() => removeNewImage(index)}
+                className="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 text-xs rounded"
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+
+        {/* Video */}
+        {type === "video" && savedVideo && (
+          <video
+            src={savedVideo}
+            controls
+            className="rounded-lg w-full"
+          />
         )}
 
         <button
           onClick={handleSubmit}
           disabled={loading}
-          className="w-full bg-black text-white py-3 rounded-lg hover:bg-gray-800 transition"
+          className="w-full bg-black text-white py-3 rounded-lg"
         >
-          {loading ? "Saving..." : "Save Hero Settings"}
+          {loading ? "Uploading..." : "Save Hero Settings"}
         </button>
 
         {message && (
-          <p className="text-green-600 font-medium">{message}</p>
+          <p className="text-green-600 font-medium">
+            {message}
+          </p>
         )}
       </div>
     </div>
   );
 }
+
