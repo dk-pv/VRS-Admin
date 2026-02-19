@@ -92,6 +92,28 @@ export default function DashboardLayout({
               <Image size={18} />
               Discover Video Section  
             </Link>
+            <Link
+              href="/dashboard/Team-section"
+              className={menuItemClass("/dashboard/Team-section")}
+            >
+              <Image size={18} />
+              Team Section  
+            </Link>
+            <Link
+              href="/dashboard/text-testimonials"
+              className={menuItemClass("/dashboard/text-testimonials    ")}
+            >
+              <Image size={18} />
+              Text Testimonials  
+            </Link>
+
+             <Link
+              href="/dashboard/video-testimonials"
+              className={menuItemClass("/dashboard/video-testimonials")}
+            >
+              <Image size={18} />
+              Video Testimonials  
+            </Link>
 
             {role === "superadmin" && (
               <Link
