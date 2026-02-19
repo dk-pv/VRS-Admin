@@ -77,6 +77,13 @@ export default function DashboardLayout({
               <Image size={18} />
               Secured Properties
             </Link>
+            <Link
+              href="/dashboard/propertys-showcase"
+              className={menuItemClass("/dashboard/propertys-showcase")}
+            >
+              <Image size={18} />
+              Properties Showcase
+            </Link>
 
             {role === "superadmin" && (
               <Link
