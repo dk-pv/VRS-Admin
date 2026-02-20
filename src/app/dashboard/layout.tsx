@@ -115,6 +115,15 @@ export default function DashboardLayout({
               Video Testimonials  
             </Link>
 
+
+             <Link
+              href="/dashboard/blog"
+              className={menuItemClass("/dashboard/blog")}
+            >
+              <Image size={18} />
+              Blog  
+            </Link>
+
             {/* {role === "superadmin" && (
               <Link
                 href="/dashboard/admins"
