@@ -1,244 +1,202 @@
-// "use client";
-
-// import { useEffect, useState } from "react";
-// import { useRouter } from "next/navigation";
-// import axios from "axios";
-
-// interface Message {
-//   _id: string;
-//   name: string;
-//   email: string;
-//   message: string;
-//   isRead: boolean;
-// }
-
-// export default function Dashboard() {
-//   const router = useRouter();
-//   const API = process.env.NEXT_PUBLIC_API_BASE_URL;
-
-//   const [messages, setMessages] = useState<Message[]>([]);
-
-//   useEffect(() => {
-//     const token = localStorage.getItem("adminToken");
-//     if (!token) router.push("/login");
-
-//     fetchMessages();
-//   }, []);
-
-//   const fetchMessages = async () => {
-//     const res = await axios.get(`${API}/api/contact`);
-//     setMessages(res.data);
-//   };
-
-//   const deleteMessage = async (id: string) => {
-//     await axios.delete(`${API}/api/contact/${id}`);
-//     setMessages((prev) =>
-//       prev.filter((msg) => msg._id !== id)
-//     );
-//   };
-
-//   const markAsRead = async (id: string) => {
-//     await axios.put(`${API}/api/contact/read/${id}`);
-//     fetchMessages();
-//   };
-
-//   return (
-//     <div className="p-10">
-//       <h1 className="text-2xl font-bold mb-8">
-//         Contact Messages
-//       </h1>
-
-//       <div className="space-y-4">
-//         {messages.map((msg) => (
-//           <div
-//             key={msg._id}
-//             className={`border p-4 rounded-lg ${
-//               msg.isRead
-//                 ? "bg-white"
-//                 : "bg-yellow-50"
-//             }`}
-//           >
-//             <p className="font-semibold">
-//               {msg.name}
-//             </p>
-//             <p className="text-sm text-gray-600">
-//               {msg.email}
-//             </p>
-//             <p className="mt-2">
-//               {msg.message}
-//             </p>
-
-//             <div className="flex gap-4 mt-3">
-//               {!msg.isRead && (
-//                 <button
-//                   onClick={() =>
-//                     markAsRead(msg._id)
-//                   }
-//                   className="text-blue-600"
-//                 >
-//                   Mark as Read
-//                 </button>
-//               )}
-
-//               <button
-//                 onClick={() =>
-//                   deleteMessage(msg._id)
-//                 }
-//                 className="text-red-600"
-//               >
-//                 Delete
-//               </button>
-//             </div>
-//           </div>
-//         ))}
-//       </div>
-//     </div>
-//   );
-// }
-
-
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import axios from "axios";
-import toast from "react-hot-toast";
+import Link from "next/link";
+import {
+  Building2,
+  Video,
+  Users,
+  MessageSquare,
+} from "lucide-react";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+} from "recharts";
 
-interface Message {
-  _id: string;
-  name: string;
-  email: string;
-  message: string;
-  isRead: boolean;
-}
+const API = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-export default function Dashboard() {
-  const router = useRouter();
-  const API = process.env.NEXT_PUBLIC_API_BASE_URL;
+export default function AdminDashboard() {
+  const [stats, setStats] = useState({
+    properties: 0,
+    webinars: 0,
+    team: 0,
+    testimonials: 0,
+  });
 
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [chartData, setChartData] = useState<any[]>([]);
 
   useEffect(() => {
-    const token = localStorage.getItem("adminToken");
-    if (!token) router.push("/login");
+    const fetchStats = async () => {
+      try {
+        const [
+          properties,
+          webinars,
+          team,
+          textTestimonials,
+          videoTestimonials,
+          contacts,
+        ] = await Promise.all([
+          fetch(`${API}/api/secured-properties`).then(res => res.json()),
+          fetch(`${API}/api/webinars`).then(res => res.json()),
+          fetch(`${API}/api/team`).then(res => res.json()),
+          fetch(`${API}/api/text-testimonials`).then(res => res.json()),
+          fetch(`${API}/api/video-testimonials`).then(res => res.json()),
+          fetch(`${API}/api/contact`).then(res => res.json()),
+        ]);
 
-    fetchMessages();
+        setStats({
+          properties: properties.length || 0,
+          webinars: webinars.length || 0,
+          team: team.length || 0,
+          testimonials:
+            (textTestimonials.length || 0) +
+            (videoTestimonials.length || 0),
+        });
+
+        // Example chart data (last 6 months dummy or based on contacts)
+        const sampleData = [
+          { month: "Jan", enquiries: 12 },
+          { month: "Feb", enquiries: 18 },
+          { month: "Mar", enquiries: 22 },
+          { month: "Apr", enquiries: 30 },
+          { month: "May", enquiries: 26 },
+          { month: "Jun", enquiries: 35 },
+        ];
+
+        setChartData(sampleData);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchStats();
   }, []);
 
-  const fetchMessages = async () => {
-    try {
-      setLoading(true);
-      const res = await axios.get(`${API}/api/contact`);
-      setMessages(res.data);
-    } catch {
-      toast.error("Failed to load messages");
-    }
-    setLoading(false);
-  };
-
-  const deleteMessage = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this message?")) return;
-
-    try {
-      await axios.delete(`${API}/api/contact/${id}`);
-      setMessages((prev) =>
-        prev.filter((msg) => msg._id !== id)
-      );
-      toast.success("Message deleted");
-    } catch {
-      toast.error("Delete failed");
-    }
-  };
-
-  const markAsRead = async (id: string) => {
-    try {
-      await axios.put(`${API}/api/contact/read/${id}`);
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg._id === id ? { ...msg, isRead: true } : msg
-        )
-      );
-      toast.success("Marked as read");
-    } catch {
-      toast.error("Update failed");
-    }
-  };
+  const cards = [
+    {
+      title: "Secured Properties",
+      value: stats.properties,
+      icon: <Building2 size={22} />,
+    },
+    {
+      title: "Total Webinars",
+      value: stats.webinars,
+      icon: <Video size={22} />,
+    },
+    {
+      title: "Team Members",
+      value: stats.team,
+      icon: <Users size={22} />,
+    },
+    {
+      title: "Testimonials",
+      value: stats.testimonials,
+      icon: <MessageSquare size={22} />,
+    },
+  ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 p-8">
-      <div className="max-w-6xl mx-auto bg-white rounded-3xl shadow-2xl p-10 border border-gray-100">
+    <div className="min-h-screen bg-white text-black px-10 py-12">
+      <div className="max-w-7xl mx-auto">
 
-        <div className="mb-10">
-          <h1 className="text-4xl font-bold text-gray-800">
-            Contact Messages
-          </h1>
-          <p className="text-gray-500 mt-2">
-            Manage website inquiries
-          </p>
-        </div>
+        {/* Page Title */}
+        <h1 className="text-3xl font-semibold mb-10">
+          Admin Dashboard
+        </h1>
 
-        {loading ? (
-          <div className="text-center text-gray-500">
-            Loading messages...
-          </div>
-        ) : messages.length === 0 ? (
-          <div className="text-center text-gray-400 py-20">
-            No contact messages yet.
-          </div>
-        ) : (
-          <div className="space-y-6">
-            {messages.map((msg) => (
-              <div
-                key={msg._id}
-                className={`p-6 rounded-2xl shadow-sm transition ${
-                  msg.isRead
-                    ? "bg-gray-50"
-                    : "bg-yellow-50 border border-yellow-200"
-                }`}
-              >
-                <div className="flex justify-between items-start">
-                  <div>
-                    <p className="font-semibold text-lg">
-                      {msg.name}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      {msg.email}
-                    </p>
-                  </div>
-
-                  {!msg.isRead && (
-                    <span className="text-xs bg-yellow-400 text-black px-3 py-1 rounded-full font-medium">
-                      New
-                    </span>
-                  )}
-                </div>
-
-                <p className="mt-4 text-gray-700">
-                  {msg.message}
-                </p>
-
-                <div className="flex gap-4 mt-6">
-                  {!msg.isRead && (
-                    <button
-                      onClick={() => markAsRead(msg._id)}
-                      className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition"
-                    >
-                      Mark as Read
-                    </button>
-                  )}
-
-                  <button
-                    onClick={() => deleteMessage(msg._id)}
-                    className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition"
-                  >
-                    Delete
-                  </button>
+        {/* ========================= */}
+        {/* TOP STATS CARDS */}
+        {/* ========================= */}
+        <div className="grid md:grid-cols-4 gap-6 mb-16">
+          {cards.map((card, i) => (
+            <div
+              key={i}
+              className="bg-white border border-gray-200 shadow-sm rounded-2xl p-6 hover:shadow-md transition"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <div className="text-yellow-500">
+                  {card.icon}
                 </div>
               </div>
-            ))}
+              <h2 className="text-2xl font-bold">
+                {card.value}
+              </h2>
+              <p className="text-gray-500 text-sm mt-1">
+                {card.title}
+              </p>
+            </div>
+          ))}
+        </div>
+
+        {/* ========================= */}
+        {/* CHART SECTION */}
+        {/* ========================= */}
+        <div className="bg-white border border-gray-200 rounded-2xl p-8 mb-16 shadow-sm">
+          <h2 className="text-lg font-semibold mb-6">
+            Customer Enquiries (Last 6 Months)
+          </h2>
+
+          <div className="h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={chartData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="month" />
+                <YAxis />
+                <Tooltip />
+                <Line
+                  type="monotone"
+                  dataKey="enquiries"
+                  stroke="#facc15"
+                  strokeWidth={3}
+                />
+              </LineChart>
+            </ResponsiveContainer>
           </div>
-        )}
+        </div>
+
+        {/* ========================= */}
+        {/* QUICK LINKS */}
+        {/* ========================= */}
+        <div>
+          <h2 className="text-lg font-semibold mb-6">
+            Quick Links
+          </h2>
+
+          <div className="grid md:grid-cols-4 gap-6">
+            <Link
+              href="/admin/webinar"
+              className="bg-gray-50 border border-gray-200 rounded-xl p-6 hover:bg-yellow-50 transition"
+            >
+              Manage Webinars
+            </Link>
+
+            <Link
+              href="/admin/team"
+              className="bg-gray-50 border border-gray-200 rounded-xl p-6 hover:bg-yellow-50 transition"
+            >
+              Manage Team
+            </Link>
+
+            <Link
+              href="/admin/blog"
+              className="bg-gray-50 border border-gray-200 rounded-xl p-6 hover:bg-yellow-50 transition"
+            >
+              Manage Blogs
+            </Link>
+
+            <Link
+              href="/admin/testimonials"
+              className="bg-gray-50 border border-gray-200 rounded-xl p-6 hover:bg-yellow-50 transition"
+            >
+              Manage Testimonials
+            </Link>
+          </div>
+        </div>
 
       </div>
     </div>

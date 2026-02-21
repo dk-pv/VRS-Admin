@@ -3,7 +3,16 @@
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { LayoutDashboard, Image, Users, LogOut } from "lucide-react";
+import {
+  LayoutDashboard,
+  Image,
+  Users,
+  LogOut,
+  Video,
+  MessageSquare,
+  FileText,
+  Mail,
+} from "lucide-react";
 
 export default function DashboardLayout({
   children,
@@ -13,17 +22,14 @@ export default function DashboardLayout({
   const router = useRouter();
   const pathname = usePathname();
 
-  const [role, setRole] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem("adminToken");
-    const storedRole = localStorage.getItem("adminRole");
 
     if (!token) {
       router.push("/login");
     } else {
-      setRole(storedRole || "");
       setLoading(false);
     }
   }, []);
@@ -37,29 +43,32 @@ export default function DashboardLayout({
   if (loading) return null;
 
   const menuItemClass = (path: string) =>
-    `flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${
+    `flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-sm ${
       pathname === path
-        ? "bg-[#d4af37] text-black font-semibold shadow-md"
-        : "text-gray-400 hover:bg-white/10 hover:text-white"
+        ? "bg-yellow-500 text-black font-semibold shadow-md"
+        : "text-gray-400 hover:bg-white/5 hover:text-white"
     }`;
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-gray-100 to-gray-200">
-      {/* Sidebar */}
-      <aside className="w-72 bg-[#0f0f0f] text-white flex flex-col justify-between px-6 py-8 shadow-2xl sticky top-0 h-screen">
-        <div className="flex flex-col h-full">
+    <div className="flex min-h-screen bg-gray-100">
+
+      {/* ================= SIDEBAR ================= */}
+      <aside className="w-72 bg-black text-white flex flex-col justify-between px-6 py-8 shadow-xl">
+
+        <div>
           {/* Logo */}
-          <div className="mb-12">
-            <h2 className="text-3xl font-bold tracking-wide text-[#d4af37]">
+          <div className="mb-10">
+            <h2 className="text-2xl font-bold text-yellow-500">
               VRS Admin
             </h2>
             <p className="text-xs text-gray-500 mt-1">
-              Luxury Real Estate Panel
+              Luxury Management Panel
             </p>
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 overflow-y-auto space-y-2 pr-2">
+          <nav className="space-y-2">
+
             <Link href="/dashboard" className={menuItemClass("/dashboard")}>
               <LayoutDashboard size={18} />
               Dashboard
@@ -85,7 +94,7 @@ export default function DashboardLayout({
               href="/dashboard/webinar"
               className={menuItemClass("/dashboard/webinar")}
             >
-              <Image size={18} />
+              <Video size={18} />
               Webinar
             </Link>
 
@@ -93,23 +102,23 @@ export default function DashboardLayout({
               href="/dashboard/discover-video-section"
               className={menuItemClass("/dashboard/discover-video-section")}
             >
-              <Image size={18} />
+              <Video size={18} />
               Discover Video
             </Link>
 
             <Link
-              href="/dashboard/Team-section"
-              className={menuItemClass("/dashboard/Team-section")}
+              href="/dashboard/team-section"
+              className={menuItemClass("/dashboard/team-section")}
             >
               <Users size={18} />
-              Team Section
+              Team
             </Link>
 
             <Link
               href="/dashboard/text-testimonials"
               className={menuItemClass("/dashboard/text-testimonials")}
             >
-              <Image size={18} />
+              <MessageSquare size={18} />
               Text Testimonials
             </Link>
 
@@ -117,7 +126,7 @@ export default function DashboardLayout({
               href="/dashboard/video-testimonials"
               className={menuItemClass("/dashboard/video-testimonials")}
             >
-              <Image size={18} />
+              <Video size={18} />
               Video Testimonials
             </Link>
 
@@ -125,37 +134,39 @@ export default function DashboardLayout({
               href="/dashboard/blog"
               className={menuItemClass("/dashboard/blog")}
             >
-              <Image size={18} />
+              <FileText size={18} />
               Blog
             </Link>
 
-            {/* {role === "superadmin" && (
-              <Link
-                href="/dashboard/admins"
-                className={menuItemClass("/dashboard/admins")}
-              >
-                <Users size={18} />
-                Admin Management
-              </Link>
-            )} */}
-          </nav>
+            <Link
+              href="/dashboard/messages"
+              className={menuItemClass("/dashboard/messages")}
+            >
+              <Mail size={18} />
+              Messages
+            </Link>
 
-          {/* Logout */}
-          <button
-            onClick={handleLogout}
-            className="mt-8 flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-red-600 hover:bg-red-700 transition-all duration-300 shadow-md"
-          >
-            <LogOut size={18} />
-            Logout
-          </button>
+          </nav>
         </div>
+
+        {/* Logout */}
+        <button
+          onClick={handleLogout}
+          className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-red-600 hover:bg-red-700 transition text-sm font-medium"
+        >
+          <LogOut size={18} />
+          Logout
+        </button>
       </aside>
 
-      {/* Main Content */}
-      <main className="flex-1 p-10 overflow-y-auto">
-        <div className="bg-white rounded-3xl shadow-xl p-10 min-h-full border border-gray-100">
+      {/* ================= MAIN CONTENT ================= */}
+      <main className="flex-1 p-8 overflow-y-auto">
+
+        {/* Page Container */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 min-h-[calc(100vh-4rem)]">
           {children}
         </div>
+
       </main>
     </div>
   );
