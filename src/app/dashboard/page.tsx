@@ -138,7 +138,7 @@ export default function AdminDashboard() {
         {/* ========================= */}
         <div className="bg-white border border-gray-200 rounded-2xl p-8 mb-16 shadow-sm">
           <h2 className="text-lg font-semibold mb-6">
-            Customer Enquiries (Last 6 Months)
+           Sale Chart (Last 6 Months)
           </h2>
 
           <div className="h-[300px]">
@@ -169,31 +169,31 @@ export default function AdminDashboard() {
 
           <div className="grid md:grid-cols-4 gap-6">
             <Link
-              href="/admin/webinar"
+              href="/dashboard/webinar"
               className="bg-gray-50 border border-gray-200 rounded-xl p-6 hover:bg-yellow-50 transition"
             >
               Manage Webinars
             </Link>
 
             <Link
-              href="/admin/team"
+              href="/dashboard/team-section"
               className="bg-gray-50 border border-gray-200 rounded-xl p-6 hover:bg-yellow-50 transition"
             >
               Manage Team
             </Link>
 
             <Link
-              href="/admin/blog"
+              href="/dashboard/blog"
               className="bg-gray-50 border border-gray-200 rounded-xl p-6 hover:bg-yellow-50 transition"
             >
               Manage Blogs
             </Link>
 
             <Link
-              href="/admin/testimonials"
+              href="/dashboard/video-testimonials"
               className="bg-gray-50 border border-gray-200 rounded-xl p-6 hover:bg-yellow-50 transition"
             >
-              Manage Testimonials
+              Manage video Testimonials
             </Link>
           </div>
         </div>
