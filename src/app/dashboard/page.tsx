@@ -7,68 +7,23 @@ import {
   Video,
   Users,
   MessageSquare,
+  Mail,
+  IndianRupee,
+  CalendarDays,
+  Activity,
 } from "lucide-react";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  CartesianGrid,
-} from "recharts";
 
 const API = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export default function AdminDashboard() {
-  const [stats, setStats] = useState({
-    properties: 0,
-    webinars: 0,
-    team: 0,
-    testimonials: 0,
-  });
-
-  const [chartData, setChartData] = useState<any[]>([]);
+  const [stats, setStats] = useState<any>(null);
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const [
-          properties,
-          webinars,
-          team,
-          textTestimonials,
-          videoTestimonials,
-          contacts,
-        ] = await Promise.all([
-          fetch(`${API}/api/secured-properties`).then(res => res.json()),
-          fetch(`${API}/api/webinars`).then(res => res.json()),
-          fetch(`${API}/api/team`).then(res => res.json()),
-          fetch(`${API}/api/text-testimonials`).then(res => res.json()),
-          fetch(`${API}/api/video-testimonials`).then(res => res.json()),
-          fetch(`${API}/api/contact`).then(res => res.json()),
-        ]);
-
-        setStats({
-          properties: properties.length || 0,
-          webinars: webinars.length || 0,
-          team: team.length || 0,
-          testimonials:
-            (textTestimonials.length || 0) +
-            (videoTestimonials.length || 0),
-        });
-
-        // Example chart data (last 6 months dummy or based on contacts)
-        const sampleData = [
-          { month: "Jan", enquiries: 12 },
-          { month: "Feb", enquiries: 18 },
-          { month: "Mar", enquiries: 22 },
-          { month: "Apr", enquiries: 30 },
-          { month: "May", enquiries: 26 },
-          { month: "Jun", enquiries: 35 },
-        ];
-
-        setChartData(sampleData);
+        const res = await fetch(`${API}/api/dashboard/stats`);
+        const data = await res.json();
+        setStats(data);
       } catch (error) {
         console.error(error);
       }
@@ -77,127 +32,125 @@ export default function AdminDashboard() {
     fetchStats();
   }, []);
 
+  if (!stats) return null;
+
+  const formatCurrency = (value: number) =>
+    new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
+      maximumFractionDigits: 0,
+    }).format(value);
+
   const cards = [
     {
       title: "Secured Properties",
       value: stats.properties,
-      icon: <Building2 size={22} />,
+      icon: <Building2 size={20} />,
     },
     {
-      title: "Total Webinars",
+      title: "Properties This Month",
+      value: stats.propertiesThisMonth,
+      icon: <CalendarDays size={20} />,
+    },
+    {
+      title: "Total Enquiries",
+      value: stats.enquiries,
+      icon: <Mail size={20} />,
+    },
+    {
+      title: "Webinars",
       value: stats.webinars,
-      icon: <Video size={22} />,
+      icon: <Video size={20} />,
+    },
+    {
+      title: "Upcoming Webinars",
+      value: stats.upcomingWebinars,
+      icon: <Activity size={20} />,
     },
     {
       title: "Team Members",
       value: stats.team,
-      icon: <Users size={22} />,
+      icon: <Users size={20} />,
     },
     {
       title: "Testimonials",
       value: stats.testimonials,
-      icon: <MessageSquare size={22} />,
+      icon: <MessageSquare size={20} />,
     },
   ];
 
   return (
-    <div className="min-h-screen bg-white text-black px-10 py-12">
-      <div className="max-w-7xl mx-auto">
+    <div>
+      <h1 className="text-3xl font-bold mb-10">Dashboard Overview</h1>
 
-        {/* Page Title */}
-        <h1 className="text-3xl font-semibold mb-10">
-          Admin Dashboard
-        </h1>
-
-        {/* ========================= */}
-        {/* TOP STATS CARDS */}
-        {/* ========================= */}
-        <div className="grid md:grid-cols-4 gap-6 mb-16">
-          {cards.map((card, i) => (
-            <div
-              key={i}
-              className="bg-white border border-gray-200 shadow-sm rounded-2xl p-6 hover:shadow-md transition"
-            >
-              <div className="flex items-center justify-between mb-4">
-                <div className="text-yellow-500">
-                  {card.icon}
-                </div>
+      {/* ================== STATS GRID ================== */}
+      <div className="grid md:grid-cols-4 gap-6 mb-12">
+        {cards.map((card, i) => (
+          <div
+            key={i}
+            className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm hover:shadow-lg transition-all duration-300"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-yellow-100 text-yellow-600 rounded-xl">
+                {card.icon}
               </div>
-              <h2 className="text-2xl font-bold">
-                {card.value}
-              </h2>
-              <p className="text-gray-500 text-sm mt-1">
-                {card.title}
-              </p>
             </div>
-          ))}
-        </div>
 
-        {/* ========================= */}
-        {/* CHART SECTION */}
-        {/* ========================= */}
-        <div className="bg-white border border-gray-200 rounded-2xl p-8 mb-16 shadow-sm">
-          <h2 className="text-lg font-semibold mb-6">
-           Sale Chart (Last 6 Months)
-          </h2>
-
-          <div className="h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip />
-                <Line
-                  type="monotone"
-                  dataKey="enquiries"
-                  stroke="#facc15"
-                  strokeWidth={3}
-                />
-              </LineChart>
-            </ResponsiveContainer>
+            <h2 className="text-2xl font-bold mb-1">{card.value}</h2>
+            <p className="text-sm text-gray-500">{card.title}</p>
           </div>
+        ))}
+      </div>
+
+      {/* ================== LIVE STATUS ================== */}
+      <div className="mb-12">
+        <div className="flex items-center gap-3">
+          <h2 className="text-lg font-semibold">Webinar Status:</h2>
+          {stats.isWebinarLive ? (
+            <span className="px-4 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">
+              Live Now
+            </span>
+          ) : (
+            <span className="px-4 py-1 bg-gray-100 text-gray-600 rounded-full text-sm font-medium">
+              No Active Webinar
+            </span>
+          )}
         </div>
+      </div>
 
-        {/* ========================= */}
-        {/* QUICK LINKS */}
-        {/* ========================= */}
-        <div>
-          <h2 className="text-lg font-semibold mb-6">
-            Quick Links
-          </h2>
+      {/* ================== QUICK LINKS ================== */}
+      <div>
+        <h2 className="text-lg font-semibold mb-6">Quick Actions</h2>
 
-          <div className="grid md:grid-cols-4 gap-6">
-            <Link
-              href="/dashboard/webinar"
-              className="bg-gray-50 border border-gray-200 rounded-xl p-6 hover:bg-yellow-50 transition"
-            >
-              Manage Webinars
-            </Link>
+        <div className="grid md:grid-cols-4 gap-6">
+          <Link
+            href="/dashboard/secured-properties"
+            className="bg-gray-50 border border-gray-200 rounded-xl p-6 hover:bg-yellow-50 transition"
+          >
+            Manage Properties
+          </Link>
 
-            <Link
-              href="/dashboard/team-section"
-              className="bg-gray-50 border border-gray-200 rounded-xl p-6 hover:bg-yellow-50 transition"
-            >
-              Manage Team
-            </Link>
+          <Link
+            href="/dashboard/webinar"
+            className="bg-gray-50 border border-gray-200 rounded-xl p-6 hover:bg-yellow-50 transition"
+          >
+            Manage Webinars
+          </Link>
 
-            <Link
-              href="/dashboard/blog"
-              className="bg-gray-50 border border-gray-200 rounded-xl p-6 hover:bg-yellow-50 transition"
-            >
-              Manage Blogs
-            </Link>
+          <Link
+            href="/dashboard/messages"
+            className="bg-gray-50 border border-gray-200 rounded-xl p-6 hover:bg-yellow-50 transition"
+          >
+            View Enquiries
+          </Link>
 
-            <Link
-              href="/dashboard/video-testimonials"
-              className="bg-gray-50 border border-gray-200 rounded-xl p-6 hover:bg-yellow-50 transition"
-            >
-              Manage video Testimonials
-            </Link>
-          </div>
+          <Link
+            href="/dashboard/blog"
+            className="bg-gray-50 border border-gray-200 rounded-xl p-6 hover:bg-yellow-50 transition"
+          >
+            Manage Blog
+          </Link>
         </div>
-
       </div>
     </div>
   );
