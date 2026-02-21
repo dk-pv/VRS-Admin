@@ -107,8 +107,8 @@ export default function DashboardLayout({
             </Link>
 
             <Link
-              href="/dashboard/team-section"
-              className={menuItemClass("/dashboard/team-section")}
+              href="/dashboard/Team-section"
+              className={menuItemClass("/dashboard/Team-section")}
             >
               <Users size={18} />
               Team
