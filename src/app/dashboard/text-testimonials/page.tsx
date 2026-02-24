@@ -249,9 +249,6 @@
 //   );
 // }
 
-
-
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -334,9 +331,7 @@ export default function AdminTextTestimonials() {
 
     try {
       await axios.delete(`${API}/api/text-testimonials/${id}`);
-      setTestimonials((prev) =>
-        prev.filter((t) => t._id !== id)
-      );
+      setTestimonials((prev) => prev.filter((t) => t._id !== id));
       toast.success("Deleted successfully");
     } catch {
       toast.error("Delete failed");
@@ -350,15 +345,12 @@ export default function AdminTextTestimonials() {
     try {
       setLoading(true);
 
-      await axios.put(
-        `${API}/api/text-testimonials/${editing._id}`,
-        {
-          name,
-          location,
-          text,
-          rating,
-        }
-      );
+      await axios.put(`${API}/api/text-testimonials/${editing._id}`, {
+        name,
+        location,
+        text,
+        rating,
+      });
 
       toast.success("Updated successfully");
 
@@ -375,14 +367,11 @@ export default function AdminTextTestimonials() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 p-8">
       <div className="max-w-6xl mx-auto bg-white rounded-3xl shadow-2xl p-10 space-y-10 border border-gray-100">
-
         <div>
           <h1 className="text-4xl font-bold text-gray-800">
-            Text Testimonials
+            client testimonials.{" "}
           </h1>
-          <p className="text-gray-500 mt-2">
-            Manage client reviews
-          </p>
+          <p className="text-gray-500 mt-2">Manage client reviews</p>
         </div>
 
         {/* ADD FORM */}
@@ -403,9 +392,7 @@ export default function AdminTextTestimonials() {
 
           <select
             value={rating}
-            onChange={(e) =>
-              setRating(Number(e.target.value))
-            }
+            onChange={(e) => setRating(Number(e.target.value))}
             className="border border-gray-300 rounded-xl p-4"
           >
             {[5, 4, 3, 2, 1].map((r) => (
@@ -419,9 +406,7 @@ export default function AdminTextTestimonials() {
             onClick={addTestimonial}
             disabled={loading}
             className={`rounded-xl text-white font-semibold ${
-              loading
-                ? "bg-gray-500"
-                : "bg-black hover:bg-gray-900"
+              loading ? "bg-gray-500" : "bg-black hover:bg-gray-900"
             }`}
           >
             {loading ? "Adding..." : "Add"}
@@ -444,15 +429,9 @@ export default function AdminTextTestimonials() {
               className="bg-gray-50 hover:bg-gray-100 transition p-6 rounded-2xl shadow-sm flex justify-between"
             >
               <div>
-                <p className="font-semibold text-lg">
-                  {testimonial.name}
-                </p>
-                <p className="text-sm text-gray-500">
-                  {testimonial.location}
-                </p>
-                <p className="mt-3 text-gray-700">
-                  {testimonial.text}
-                </p>
+                <p className="font-semibold text-lg">{testimonial.name}</p>
+                <p className="text-sm text-gray-500">{testimonial.location}</p>
+                <p className="mt-3 text-gray-700">{testimonial.text}</p>
                 <div className="mt-2 text-yellow-500">
                   {"⭐".repeat(testimonial.rating)}
                 </div>
@@ -473,9 +452,7 @@ export default function AdminTextTestimonials() {
                 </button>
 
                 <button
-                  onClick={() =>
-                    deleteTestimonial(testimonial._id)
-                  }
+                  onClick={() => deleteTestimonial(testimonial._id)}
                   className="px-4 py-2 bg-red-600 text-white rounded-lg"
                 >
                   Delete
@@ -484,17 +461,13 @@ export default function AdminTextTestimonials() {
             </div>
           ))}
         </div>
-
       </div>
 
       {/* EDIT MODAL */}
       {editing && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-white p-8 rounded-3xl w-[450px] shadow-2xl space-y-6">
-
-            <h2 className="text-2xl font-semibold">
-              Update Testimonial
-            </h2>
+            <h2 className="text-2xl font-semibold">Update Testimonial</h2>
 
             <input
               value={name}
@@ -517,9 +490,7 @@ export default function AdminTextTestimonials() {
 
             <select
               value={rating}
-              onChange={(e) =>
-                setRating(Number(e.target.value))
-              }
+              onChange={(e) => setRating(Number(e.target.value))}
               className="border border-gray-300 rounded-xl p-4 w-full"
             >
               {[5, 4, 3, 2, 1].map((r) => (
@@ -544,15 +515,12 @@ export default function AdminTextTestimonials() {
                 onClick={updateTestimonial}
                 disabled={loading}
                 className={`px-5 py-2 rounded-xl text-white ${
-                  loading
-                    ? "bg-gray-500"
-                    : "bg-black hover:bg-gray-900"
+                  loading ? "bg-gray-500" : "bg-black hover:bg-gray-900"
                 }`}
               >
                 {loading ? "Updating..." : "Update"}
               </button>
             </div>
-
           </div>
         </div>
       )}
