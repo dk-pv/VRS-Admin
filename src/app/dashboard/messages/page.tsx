@@ -1,6 +1,3 @@
-
-
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -12,8 +9,12 @@ interface Message {
   _id: string;
   name: string;
   email: string;
-  message: string;
+  phone: string;
+  australiaDuration?: string;
+  mortgageYears?: string;
+  baPreference?: string;
   isRead: boolean;
+  createdAt: string;
 }
 
 export default function Dashboard() {
@@ -46,9 +47,7 @@ export default function Dashboard() {
 
     try {
       await axios.delete(`${API}/api/contact/${id}`);
-      setMessages((prev) =>
-        prev.filter((msg) => msg._id !== id)
-      );
+      setMessages((prev) => prev.filter((msg) => msg._id !== id));
       toast.success("Message deleted");
     } catch {
       toast.error("Delete failed");
@@ -101,6 +100,7 @@ export default function Dashboard() {
                     : "bg-yellow-50 border border-yellow-200"
                 }`}
               >
+                {/* Header */}
                 <div className="flex justify-between items-start">
                   <div>
                     <p className="font-semibold text-lg">
@@ -108,6 +108,12 @@ export default function Dashboard() {
                     </p>
                     <p className="text-sm text-gray-500">
                       {msg.email}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      {msg.phone}
+                    </p>
+                    <p className="text-xs text-gray-400 mt-1">
+                      {new Date(msg.createdAt).toLocaleString()}
                     </p>
                   </div>
 
@@ -118,10 +124,40 @@ export default function Dashboard() {
                   )}
                 </div>
 
-                <p className="mt-4 text-gray-700">
-                  {msg.message}
-                </p>
+                {/* Details */}
+                <div className="mt-4 space-y-2 text-gray-700 text-sm">
 
+                  {msg.australiaDuration && (
+                    <p>
+                      <span className="font-medium">
+                        Australia Duration:
+                      </span>{" "}
+                      {msg.australiaDuration}
+                    </p>
+                  )}
+
+                  {msg.mortgageYears && (
+                    <p>
+                      <span className="font-medium">
+                        Mortgage Years:
+                      </span>{" "}
+                      {msg.mortgageYears}
+                    </p>
+                  )}
+
+                  {msg.baPreference && (
+                    <div>
+                      <p className="font-medium">
+                        BA Preference:
+                      </p>
+                      <p className="mt-1 text-gray-600">
+                        {msg.baPreference}
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Actions */}
                 <div className="flex gap-4 mt-6">
                   {!msg.isRead && (
                     <button

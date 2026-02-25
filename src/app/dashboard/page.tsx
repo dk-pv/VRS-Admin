@@ -102,21 +102,7 @@ export default function AdminDashboard() {
         ))}
       </div>
 
-      {/* ================== LIVE STATUS ================== */}
-      <div className="mb-12">
-        <div className="flex items-center gap-3">
-          <h2 className="text-lg font-semibold">Webinar Status:</h2>
-          {stats.isWebinarLive ? (
-            <span className="px-4 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">
-              Live Now
-            </span>
-          ) : (
-            <span className="px-4 py-1 bg-gray-100 text-gray-600 rounded-full text-sm font-medium">
-              No Active Webinar
-            </span>
-          )}
-        </div>
-      </div>
+    
 
       {/* ================== QUICK LINKS ================== */}
       <div>
