@@ -1,5 +1,3 @@
-
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -177,18 +175,24 @@ export default function AdminTextTestimonials() {
           {testimonials.map((testimonial) => (
             <div
               key={testimonial._id}
-              className="bg-gray-50 hover:bg-gray-100 transition p-6 rounded-2xl shadow-sm flex justify-between"
+              className="bg-gray-50 hover:bg-gray-100 transition p-6 rounded-2xl shadow-sm flex justify-between items-stretch gap-6"
             >
-              <div>
+              {/* LEFT CONTENT */}
+              <div className="flex-1">
                 <p className="font-semibold text-lg">{testimonial.name}</p>
                 <p className="text-sm text-gray-500">{testimonial.location}</p>
-                <p className="mt-3 text-gray-700">{testimonial.text}</p>
-                <div className="mt-2 text-yellow-500">
+
+                <p className="mt-3 text-gray-700 line-clamp-3">
+                  {testimonial.text}
+                </p>
+
+                <div className="mt-3 text-yellow-500">
                   {"⭐".repeat(testimonial.rating)}
                 </div>
               </div>
 
-              <div className="flex gap-4">
+              {/* RIGHT BUTTONS */}
+              <div className="flex flex-col justify-center gap-3 min-w-[110px]">
                 <button
                   onClick={() => {
                     setEditing(testimonial);
@@ -197,14 +201,14 @@ export default function AdminTextTestimonials() {
                     setText(testimonial.text);
                     setRating(testimonial.rating);
                   }}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg"
+                  className="w-full h-[40px] bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium"
                 >
                   Edit
                 </button>
 
                 <button
                   onClick={() => deleteTestimonial(testimonial._id)}
-                  className="px-4 py-2 bg-red-600 text-white rounded-lg"
+                  className="w-full h-[40px] bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium"
                 >
                   Delete
                 </button>
