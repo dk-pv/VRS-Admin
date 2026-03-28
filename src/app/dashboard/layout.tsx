@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -11,7 +12,6 @@ import {
   Video,
   MessageSquare,
   FileText,
-  Mail,
 } from "lucide-react";
 
 export default function DashboardLayout({
@@ -50,17 +50,13 @@ export default function DashboardLayout({
     }`;
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
-
+    <div className="flex bg-gray-100">
       {/* ================= SIDEBAR ================= */}
-      <aside className="w-72 bg-black text-white flex flex-col justify-between px-6 py-8 shadow-xl">
-
+      <aside className="w-72 h-screen sticky top-0 bg-black text-white flex flex-col justify-between px-6 py-8 shadow-xl">
         <div>
           {/* Logo */}
           <div className="mb-10">
-            <h2 className="text-2xl font-bold text-yellow-500">
-              VRS Admin
-            </h2>
+            <h2 className="text-2xl font-bold text-yellow-500">VRS Admin</h2>
             <p className="text-xs text-gray-500 mt-1">
               Luxury Management Panel
             </p>
@@ -68,7 +64,6 @@ export default function DashboardLayout({
 
           {/* Navigation */}
           <nav className="space-y-2">
-
             <Link href="/dashboard" className={menuItemClass("/dashboard")}>
               <LayoutDashboard size={18} />
               Dashboard
@@ -137,15 +132,6 @@ export default function DashboardLayout({
               <FileText size={18} />
               Blog
             </Link>
-
-            <Link
-              href="/dashboard/messages"
-              className={menuItemClass("/dashboard/messages")}
-            >
-              <Mail size={18} />
-              Messages
-            </Link>
-
           </nav>
         </div>
 
@@ -161,12 +147,9 @@ export default function DashboardLayout({
 
       {/* ================= MAIN CONTENT ================= */}
       <main className="flex-1 p-8 overflow-y-auto">
-
-        {/* Page Container */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 min-h-[calc(100vh-4rem)]">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 min-h-screen">
           {children}
         </div>
-
       </main>
     </div>
   );
