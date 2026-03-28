@@ -1,5 +1,3 @@
-
-
 "use client";
 
 import { useEffect, useRef, useState } from "react";
@@ -21,7 +19,7 @@ export default function AdminVideoTestimonials() {
   const [name, setName] = useState("");
   const [role, setRole] = useState("");
   const [youtubeLink, setYoutubeLink] = useState("");
-  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
+
   const [editing, setEditing] = useState<VideoTestimonial | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -44,14 +42,11 @@ export default function AdminVideoTestimonials() {
     setName("");
     setRole("");
     setYoutubeLink("");
-    setThumbnailFile(null);
     if (fileRef.current) fileRef.current.value = "";
   };
 
   const addVideo = async () => {
-    if (loading) return;
-
-    if (!name || !role || !youtubeLink || !thumbnailFile) {
+    if (!name || !role || !youtubeLink) {
       toast.error("Please fill all fields");
       return;
     }
@@ -59,13 +54,11 @@ export default function AdminVideoTestimonials() {
     try {
       setLoading(true);
 
-      const formData = new FormData();
-      formData.append("name", name);
-      formData.append("role", role);
-      formData.append("youtubeLink", youtubeLink);
-      formData.append("thumbnail", thumbnailFile);
-
-      await axios.post(`${API}/api/video-testimonials`, formData);
+      await axios.post(`${API}/api/video-testimonials`, {
+        name,
+        role,
+        youtubeLink,
+      });
 
       toast.success("Video testimonial added");
 
@@ -79,7 +72,8 @@ export default function AdminVideoTestimonials() {
   };
 
   const deleteVideo = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this video testimonial?")) return;
+    if (!confirm("Are you sure you want to delete this video testimonial?"))
+      return;
 
     try {
       await axios.delete(`${API}/api/video-testimonials/${id}`);
@@ -91,24 +85,16 @@ export default function AdminVideoTestimonials() {
   };
 
   const updateVideo = async () => {
-    if (!editing || loading) return;
+    if (!editing) return;
 
     try {
       setLoading(true);
 
-      const formData = new FormData();
-      formData.append("name", name);
-      formData.append("role", role);
-      formData.append("youtubeLink", youtubeLink);
-
-      if (thumbnailFile) {
-        formData.append("thumbnail", thumbnailFile);
-      }
-
-      await axios.put(
-        `${API}/api/video-testimonials/${editing._id}`,
-        formData
-      );
+      await axios.put(`${API}/api/video-testimonials/${editing._id}`, {
+        name,
+        role,
+        youtubeLink,
+      });
 
       toast.success("Updated successfully");
 
@@ -121,18 +107,14 @@ export default function AdminVideoTestimonials() {
 
     setLoading(false);
   };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 p-8">
       <div className="max-w-6xl mx-auto bg-white p-10 rounded-3xl shadow-2xl border border-gray-100 space-y-10">
-
         <div>
           <h1 className="text-4xl font-bold text-gray-800">
             Video Testimonials
           </h1>
-          <p className="text-gray-500 mt-2">
-            Manage client video reviews
-          </p>
+          <p className="text-gray-500 mt-2">Manage client video reviews</p>
         </div>
 
         {/* ADD FORM */}
@@ -156,16 +138,6 @@ export default function AdminVideoTestimonials() {
             value={youtubeLink}
             onChange={(e) => setYoutubeLink(e.target.value)}
             className="border border-gray-300 focus:border-black focus:ring-2 focus:ring-black rounded-xl p-4"
-          />
-
-          <input
-            type="file"
-            ref={fileRef}
-            accept="image/*"
-            onChange={(e) =>
-              e.target.files && setThumbnailFile(e.target.files[0])
-            }
-            className="border border-dashed border-gray-400 rounded-xl p-4"
           />
 
           <button
@@ -220,17 +192,13 @@ export default function AdminVideoTestimonials() {
             </div>
           ))}
         </div>
-
       </div>
 
       {/* EDIT MODAL */}
       {editing && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-white p-8 rounded-3xl w-[450px] shadow-2xl space-y-6">
-
-            <h2 className="text-2xl font-semibold">
-              Update Video Testimonial
-            </h2>
+            <h2 className="text-2xl font-semibold">Update Video Testimonial</h2>
 
             <input
               value={name}
@@ -249,21 +217,6 @@ export default function AdminVideoTestimonials() {
               onChange={(e) => setYoutubeLink(e.target.value)}
               className="border border-gray-300 rounded-xl p-4 w-full"
             />
-
-            <input
-              type="file"
-              onChange={(e) =>
-                e.target.files && setThumbnailFile(e.target.files[0])
-              }
-              className="border border-dashed border-gray-400 rounded-xl p-4 w-full"
-            />
-
-            {thumbnailFile && (
-              <img
-                src={URL.createObjectURL(thumbnailFile)}
-                className="h-40 rounded-xl object-cover shadow-md"
-              />
-            )}
 
             <div className="flex justify-end gap-4">
               <button
@@ -286,7 +239,6 @@ export default function AdminVideoTestimonials() {
                 {loading ? "Updating..." : "Update"}
               </button>
             </div>
-
           </div>
         </div>
       )}
