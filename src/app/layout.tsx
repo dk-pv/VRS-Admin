@@ -30,6 +30,13 @@ import { Toaster } from "react-hot-toast";
 export const metadata: Metadata = {
   title: "VRS Admin Panel",
   description: "Admin Dashboard",
+
+  // Admin panel must never be indexed. Backs up admin/public/robots.txt, which
+  // only helps if crawlers request it before reaching a page.
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export default function RootLayout({
