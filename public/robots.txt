@@ -1,2 +1,8 @@
+# Crawling is intentionally allowed so Google can see the page-level
+# "noindex, nofollow" meta (set in src/app/layout.tsx) and drop the
+# already-indexed admin URLs from its index. A blanket Disallow would
+# hide the noindex and keep stale URLs indexed forever.
+# Once Search Console shows these URLs deindexed, this file may be
+# switched back to "Disallow: /" if desired.
 User-agent: *
-Disallow: /
+Allow: /
